@@ -1,0 +1,21 @@
+{
+    "name": "1elf-me/crypt-library",
+    "description": "Crypt Library",
+    "type": "library",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Maurice Preuß",
+            "email": "hello@1elf.me"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ext-openssl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "CryptLibrary\\": "src/"
+        }
+    }
+}
