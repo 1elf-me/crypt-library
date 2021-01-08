@@ -64,7 +64,7 @@ class Crypt
      * @return bool
      * @throws RuntimeException|Exception
      */
-    public function generateKeyFile($filename, $password): bool
+    public static function generateKeyFile($filename, $password): bool
     {
         $contentEncryptionKey = random_bytes(512);
         $encryptedContentEncryptionKey = self::encrypt($contentEncryptionKey, $password);
@@ -74,5 +74,16 @@ class Crypt
         }
 
         return true;
+    }
+
+    /**
+     * @param $password
+     * @return string
+     * @throws Exception
+     */
+    public static function generateContentEncryptionKey($password): string
+    {
+        $contentEncryptionKey = random_bytes(512);
+        return self::encrypt($contentEncryptionKey, $password);
     }
 }
