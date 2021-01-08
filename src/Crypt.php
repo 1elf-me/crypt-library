@@ -1,9 +1,14 @@
 <?php
+
 namespace CryptLibrary;
 
 use Exception;
 use RuntimeException;
 
+/**
+ * Class Crypt
+ * @package CryptLibrary
+ */
 class Crypt
 {
     private static $method = 'aes-256-cbc';
@@ -50,7 +55,7 @@ class Crypt
         list($encrypted_data, $iv) = explode('::', $data, 2);
 
         // Encrypt the data
-        if(($decryptedData = openssl_decrypt($encrypted_data, self::$method, $encryption_key, 0, $iv)) === false) {
+        if (($decryptedData = openssl_decrypt($encrypted_data, self::$method, $encryption_key, 0, $iv)) === false) {
             throw new RuntimeException('Decryption error!');
         }
 

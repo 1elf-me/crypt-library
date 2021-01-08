@@ -1,8 +1,13 @@
 <?php
+
 namespace CryptLibrary;
 
 use RuntimeException;
 
+/**
+ * Class UserCrypt
+ * @package CryptLibrary
+ */
 class UserCrypt
 {
     private $userKey;
@@ -10,33 +15,23 @@ class UserCrypt
 
     /**
      * User constructor
-     * @param $userKeyFilename string Filename of user key file
+     * @param $userKey string Filename or string of user key file
      * @param $userKeyPassword string Password for user key file
      */
-    public function __construct($userKeyFilename, $userKeyPassword)
+    public function __construct(string $userKey, string $userKeyPassword)
     {
-        $this->userKey = file_get_contents($userKeyFilename);
+        $this->userKey = @is_file($userKey) ? file_get_contents($userKey) : $userKey;
         $this->userKeyPassword = $userKeyPassword;
     }
 
     /**
-     * Content encryption
-     * @param $data string Content of encrypted file
-     * @return string
-     */
-    public function encrypt($data): string
-    {
-        return Crypt::encrypt($data, $this->getContentEncryptionKey());
-    }
-
-    /**
      * Content encryption by file
-     * @param $filename
+     * @param string $filename
      * @param null $encryptedFilename
      * @return string
      * @throws RuntimeException
      */
-    public function encryptFile($filename, $encryptedFilename = null): string
+    public function encryptFile(string $filename, $encryptedFilename = null): string
     {
         $encryptedData = $this->encrypt(file_get_contents($filename));
 
@@ -48,48 +43,13 @@ class UserCrypt
     }
 
     /**
-     * Content decryption
-     * @param $data string Content of decrypted file
+     * Content encryption
+     * @param $data string Content of encrypted file
      * @return string
      */
-    public function decrypt($data): string
+    public function encrypt(string $data): string
     {
-        return Crypt::decrypt($data, $this->getContentEncryptionKey());
-    }
-
-    /**
-     * Content decryption by file
-     * @param $filename
-     * @return string
-     */
-    public function decryptFile($filename): string
-    {
-        return $this->decrypt(file_get_contents($filename));
-    }
-
-    /**
-     * Set new password for user key file
-     * @param $password string New password for user key file
-     * @return string
-     */
-    public function updateUserKey($password): string
-    {
-        return Crypt::encrypt($this->getContentEncryptionKey(), $password);
-    }
-
-    /**
-     * Set new password for user key file and store it
-     * @param $password
-     * @param $filename
-     * @return string
-     */
-    public function updateUserKeyFile($password, $filename): string
-    {
-        if (($userKey = file_put_contents($filename, $this->updateUserKey($password))) === false) {
-            throw new RuntimeException('Cannot save user key to file!');
-        }
-
-        return $userKey;
+        return Crypt::encrypt($data, $this->getContentEncryptionKey());
     }
 
     /**
@@ -99,5 +59,50 @@ class UserCrypt
     private function getContentEncryptionKey(): string
     {
         return Crypt::decrypt($this->userKey, $this->userKeyPassword);
+    }
+
+    /**
+     * Content decryption by file
+     * @param $filename
+     * @return string
+     */
+    public function decryptFile(string $filename): string
+    {
+        return $this->decrypt(file_get_contents($filename));
+    }
+
+    /**
+     * Content decryption
+     * @param $data string Content of decrypted file
+     * @return string
+     */
+    public function decrypt(string $data): string
+    {
+        return Crypt::decrypt($data, $this->getContentEncryptionKey());
+    }
+
+    /**
+     * Set new password for user key file and store it
+     * @param $password string
+     * @param $filename string
+     * @return string
+     */
+    public function updateUserKeyFile(string $password, string $filename): string
+    {
+        if (($userKey = file_put_contents($filename, $this->updateUserKey($password))) === false) {
+            throw new RuntimeException('Cannot save user key to file!');
+        }
+
+        return $userKey;
+    }
+
+    /**
+     * Set new password for user key file
+     * @param $password string New password for user key file
+     * @return string
+     */
+    public function updateUserKey(string $password): string
+    {
+        return Crypt::encrypt($this->getContentEncryptionKey(), $password);
     }
 }
